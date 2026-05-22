@@ -108,7 +108,7 @@ def _ingest_one(url: str) -> IngestItemResult:
     t_up = time.perf_counter()
     count = vector_store.upsert_chunks(chunks, embeddings, payload_meta)
     print(
-        f"{LOG_PREFIX}    upserted video_id={video_id} points={count} "
+        f"{LOG_PREFIX}    upserted (dense+sparse) video_id={video_id} points={count} "
         f"({time.perf_counter() - t_up:.2f}s)"
     )
 

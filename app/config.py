@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "BAAI/bge-large-en-v1.5"
     EMBEDDING_BATCH_SIZE: int = 30
 
+    RERANKER_MODEL: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    RERANK_CANDIDATE_K: int = 15
+    RERANK_TOP_K: int = 3
+    RRF_K: int = 60
+
     CHUNK_SIZE: int = 800
     CHUNK_OVERLAP: int = 200
     WINDOW_SIZE: int = 1500

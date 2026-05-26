@@ -46,10 +46,9 @@ def _ingest_one(url: str) -> IngestItemResult:
             url=url,
             success=True,
             video_id=video_id,
-            title=meta.get("title"),
-            channel=meta.get("channel"),
             chunks_indexed=0,
             already_indexed=True,
+            metadata=meta,
         )
 
     try:
@@ -65,8 +64,7 @@ def _ingest_one(url: str) -> IngestItemResult:
             url=url,
             success=False,
             video_id=video_id,
-            title=meta.get("title"),
-            channel=meta.get("channel"),
+            metadata=meta,
             error=f"transcript extraction failed: {e}",
         )
 
@@ -78,8 +76,7 @@ def _ingest_one(url: str) -> IngestItemResult:
             url=url,
             success=False,
             video_id=video_id,
-            title=meta.get("title"),
-            channel=meta.get("channel"),
+            metadata=meta,
             error="no chunks produced from transcript",
         )
     print(
@@ -121,10 +118,9 @@ def _ingest_one(url: str) -> IngestItemResult:
         url=url,
         success=True,
         video_id=video_id,
-        title=meta.get("title"),
-        channel=meta.get("channel"),
         chunks_indexed=count,
         already_indexed=False,
+        metadata=meta,
     )
 
 

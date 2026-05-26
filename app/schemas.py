@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel, Field, HttpUrl
 
 
@@ -19,10 +21,9 @@ class IngestItemResult(BaseModel):
     url: str
     success: bool
     video_id: str | None = None
-    title: str | None = None
-    channel: str | None = None
     chunks_indexed: int = 0
     already_indexed: bool = False
+    metadata: dict[str, Any] | None = None
     error: str | None = None
 
 

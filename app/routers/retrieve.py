@@ -1,10 +1,11 @@
 import time
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
 from app.config import settings
+from app.security import require_api_key
 from app.services import vector_store
 from app.services.embeddings import embed_texts
 from app.services.reranker import rerank
@@ -147,7 +148,7 @@ def _chunks_mode(req: RetrieveRequest) -> RetrieveResponse:
     return RetrieveResponse(mode="chunks", query=query, results=results)
 
 
-@router.post("/retrieve", response_model=RetrieveResponse)
+@router.post("/retrieve", response_model=RetrieveResponse, dependencies=[Depends(require_api_key)])
 def retrieve(req: RetrieveRequest) -> RetrieveResponse:
     try:
         if req.mode == "metadata":

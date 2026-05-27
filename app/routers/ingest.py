@@ -1,9 +1,10 @@
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.schemas import IngestItemResult, IngestRequest, IngestResponse
+from app.security import require_api_key
 from app.services import vector_store
 from app.services.chunking import transcript_to_chunks
 from app.services.embeddings import embed_texts, embedding_dimension
@@ -124,7 +125,7 @@ def _ingest_one(url: str) -> IngestItemResult:
     )
 
 
-@router.post("/ingest", response_model=IngestResponse)
+@router.post("/ingest", response_model=IngestResponse, dependencies=[Depends(require_api_key)])
 def ingest(req: IngestRequest) -> IngestResponse:
     urls = [str(u) for u in req.urls]
     t_batch = time.perf_counter()

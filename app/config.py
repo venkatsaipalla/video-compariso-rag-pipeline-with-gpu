@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 9000
 
+    RETRIEVAL_API_KEY: str | None = None
+
     @property
     def reload(self) -> bool:
         return self.ENVIRONMENT.lower().startswith("dev")

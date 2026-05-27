@@ -29,6 +29,11 @@ async def lifespan(app: FastAPI):
     print(f"[{settings.APP_NAME}] sparse bm25 model loaded (Qdrant/bm25, lemmatized)")
     get_reranker()
     print(f"[{settings.APP_NAME}] reranker loaded: {settings.RERANKER_MODEL}")
+
+    if settings.RETRIEVAL_API_KEY:
+        print(f"[{settings.APP_NAME}] API key auth ENABLED (header: X-API-Key)")
+    else:
+        print(f"[{settings.APP_NAME}] WARNING: RETRIEVAL_API_KEY unset — auth DISABLED")
     yield
 
 

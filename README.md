@@ -33,6 +33,15 @@ All protected endpoints require the header `X-API-Key: <RETRIEVAL_API_KEY>`.
 | POST   | `/ingest`   | yes  | Ingest a list of YouTube URLs (2 processed in parallel) |
 | POST   | `/retrieve` | yes  | Retrieve in `metadata` or `chunks` mode |
 
+Both protected endpoints accept caller-identity fields from the cognitive
+layer and bind them into the request's log context (see [Logging](#logging)):
+
+- `/ingest` — `user_id` (optional)
+- `/retrieve` — `user_id`, `session_id` (optional)
+
+All request/response models live in [`app/schemas.py`](app/schemas.py) — both
+ingest and retrieve schemas are colocated there for consistency.
+
 ### `/retrieve` — two modes
 
 The agent picks a mode based on the question:
@@ -124,6 +133,35 @@ First start downloads the models and NLTK assets (slow); later starts are fast.
 | `RERANKER_MODEL` | `cross-encoder/ms-marco-MiniLM-L-6-v2` | reranker |
 
 See [`app/config.py`](app/config.py) for the full list (chunking, candidate/top-K, RRF).
+
+---
+
+## Logging
+
+All logs go through a centralised, context-aware logger in
+[`app/services/logger.py`](app/services/logger.py) — no `print` statements
+anywhere in the app. Each line is formatted as:
+
+```
+Mon Nov 11 14:23:45.123 [user=<user_id> session=<session_id>] [app.<name>] INFO: message
+```
+
+- **Timestamp** — `weekday short-month day HH:MM:SS.ms`.
+- **Context** — `user_id` and `session_id` are read from `contextvars`, so a
+  single `bind_context(...)` at the request entry point propagates them to
+  every log line downstream within that async context. Missing values render
+  as `-`.
+- **Threadpool workers** — `/ingest` fans out to a `ThreadPoolExecutor`;
+  contextvars don't auto-propagate across `executor.submit`, so each worker
+  re-binds `user_id` at its entry point.
+
+To log from a new module:
+
+```python
+from app.services.logger import get_logger
+log = get_logger("my_module")    # logger name becomes "app.my_module"
+log.info(f"something happened: {value}")
+```
 
 ---
 

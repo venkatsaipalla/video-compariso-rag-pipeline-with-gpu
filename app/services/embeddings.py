@@ -4,6 +4,9 @@ import torch
 from sentence_transformers import SentenceTransformer
 
 from app.config import settings
+from app.services.logger import get_logger
+
+log = get_logger("embeddings")
 
 _model: SentenceTransformer | None = None
 _device: str | None = None
@@ -13,7 +16,7 @@ def get_device() -> str:
     global _device
     if _device is None:
         _device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"[{settings.APP_NAME}] device: {_device}")
+        log.info(f"[{settings.APP_NAME}] device: {_device}")
     return _device
 
 

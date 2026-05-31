@@ -6,7 +6,10 @@ from typing import Any
 from qdrant_client import QdrantClient, models
 
 from app.config import settings
+from app.services.logger import get_logger
 from app.services.sparse import encode_documents, encode_query
+
+log = get_logger("vector_store")
 
 _client: QdrantClient | None = None
 
@@ -52,10 +55,7 @@ def ensure_collection(vector_size: int) -> None:
     client = get_client()
     if client.collection_exists(settings.QDRANT_COLLECTION):
         if not _is_compatible(client):
-            print(
-                f"[vector_store] existing collection {settings.QDRANT_COLLECTION!r} "
-                "is incompatible with named dense+sparse layout — recreating"
-            )
+            log.warning(f"existing collection {settings.QDRANT_COLLECTION!r} is incompatible with named dense+sparse layout — recreating")
             client.delete_collection(settings.QDRANT_COLLECTION)
 
     if not client.collection_exists(settings.QDRANT_COLLECTION):
